@@ -2,5 +2,6 @@ from django.urls import path
 from . import views
     # URLConfiguration
 urlpatterns = [
-    path('api/', views.workOrder.as_view() , name = "orders")
+    path('orders', views.workOrder.as_view()),
+    path('clients', views.client.as_view()),
     ]

@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import clients
+from .models import clients, orders
 from .serializers import client_serializers
-from .serializers import orders, orders_serializers
+from .serializers import  orders_serializers, client_serializers
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -43,3 +43,22 @@ class workOrder(APIView):
         else:
             return Response(serializer.data , status=404)
 
+
+class client(APIView):
+    def __int__(self):
+        pass
+    def get(self, request):
+        client_list = clients.objects.all()
+        serializer = client_serializers(client_list, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        client_name = self.request.data["name"]
+        client_phone = self.request.data["phone_number"]
+        client_level = self.request.data["clientlevel"]
+
+        serializer = client_serializers(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=201)
+        else:
+            return Response(serializer.data , status=404)

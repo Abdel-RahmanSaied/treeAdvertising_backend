@@ -36,7 +36,7 @@ class Users(models.Model) :
 class clients(models.Model):
     id = models.AutoField(primary_key=True , auto_created=True)
     name = models.CharField(max_length=255 , default= None)
-    phone_number = models.IntegerField(null=True)
+    phone_number = models.CharField(max_length=255 , default= None)
     clientlevel = models.CharField(max_length=1 ,  choices=levels ,default='B')
     def __str__(self):
         return self.name
