@@ -10,6 +10,8 @@ from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
+import json
+
 # Create your views here.
 
 class workOrder(APIView):
@@ -63,10 +65,24 @@ class client(APIView):
         else:
             return Response(serializer.data , status=404)
 
-
 @api_view(['DELETE',])
 def delete_item(request, pk):
       if request.method == 'DELETE':
             item=orders.objects.filter(order_id=pk)
             item.delete()
             return Response()
+
+@api_view(['PUT',])
+def update_item(request,pk):
+    json_response = json.load(request)
+    print(json_response)
+    obj_list = ["recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
+                "thickness","Post_print_services","state"]
+
+    for object in obj_list :
+        print(object)
+        if object in json_response:
+            #doctor_requested_id = json_response[object]
+            verified_object = orders.objects.filter(order_id=pk)
+            verified_object.update(**json_response)
+    return Response()
