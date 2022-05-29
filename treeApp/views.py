@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import clients
 from .serializers import client_serializers
-from .serializers import orders
+from .serializers import orders, orders_serializers
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -15,6 +15,10 @@ from rest_framework.authtoken.models import Token
 class workOrder(APIView):
     def __init__(self):
         pass
+    def get(self, request):
+        orderList = orders.objects.all()
+        serializer = orders_serializers(orderList, many=True)
+        return Response(serializer.data)
     def post(self , request):
         user_name = self.request.data["user_id"]
         client_name = self.request.data["client_id"]

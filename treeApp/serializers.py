@@ -8,12 +8,12 @@ class client_serializers(serializers.ModelSerializer):
         model = clients
         fields = '__all__'
 
-class users(serializers.ModelSerializer):
+class users_serializers(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = '__all__'
 
-class orders(serializers.ModelSerializer):
+class orders_serializers(serializers.ModelSerializer):
     class Meta :
         model = orders
         fields = '__all__'
