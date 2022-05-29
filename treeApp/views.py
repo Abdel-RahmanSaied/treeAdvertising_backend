@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import clients, orders
+from .models import *
 from .serializers import client_serializers
 from .serializers import  orders_serializers, client_serializers
 
@@ -62,3 +62,11 @@ class client(APIView):
             return Response(serializer.data,status=201)
         else:
             return Response(serializer.data , status=404)
+
+
+@api_view(['DELETE',])
+def delete_item(request, pk):
+      if request.method == 'DELETE':
+            item=orders.objects.filter(order_id=pk)
+            item.delete()
+            return Response()

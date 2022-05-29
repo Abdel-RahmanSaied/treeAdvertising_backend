@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
+from .views import *
     # URLConfiguration
 urlpatterns = [
-    path('orders', views.workOrder.as_view()),
-    path('clients', views.client.as_view()),
+    path('orders', workOrder.as_view()),
+    path('clients', client.as_view()),
+    path('deleteitem/<int:pk>/', delete_item, name="deleteProduct"),
     ]
