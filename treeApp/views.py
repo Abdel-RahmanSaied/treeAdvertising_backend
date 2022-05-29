@@ -86,3 +86,4 @@ def update_item(request,pk):
             verified_object = orders.objects.filter(order_id=pk)
             verified_object.update(**json_response)
     return Response()
+
