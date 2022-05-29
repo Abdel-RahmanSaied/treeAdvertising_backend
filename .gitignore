@@ -138,3 +138,4 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+/treeApp/migrations/0010_alter_clients_phone_number.py
