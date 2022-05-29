@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from .serializers import client_serializers
-from .serializers import  orders_serializers, client_serializers
+from .serializers import  orders_serializers, client_serializers, users_serializers
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -64,6 +64,50 @@ class client(APIView):
             return Response(serializer.data,status=201)
         else:
             return Response(serializer.data , status=404)
+
+@api_view(['POST', ])
+def registration(request):
+    username = request.data["username"]
+    department = request.data["department"]
+    password1 = request.data["password1"]
+    password2 = request.data["password2"]
+    if password1 == password2:
+        user = User.objects.create_user(username=username, password=password1)
+        user.save()
+        nuser = Users.objects.create(user=user, name=username, department=department )
+        token = Token.objects.get(user=user).key
+        nuser.save()
+        return Response(token)
+    else:
+        return Response('password must match.', status=401)
+
+# @api_view(['POST', ])
+# def registration(request):
+#     if request.method(request):
+#         serializer = users_serializers(data=request.data)
+#         data = {}
+#         if serializer.is_valid():
+#             account = serializer.save()
+#             data['response'] = "successfully registered a new user."
+#             data['name'] = account.username
+#             data['department'] = account.department
+#             token = Token.objects.get(user=account).key
+#             data['token'] = token
+#         else:
+#             data = serializer.errors
+#         return Response(data)
+
+
+@api_view(['POST', ])
+def check_clientPhone(request):
+    if request.method == 'POST':
+        client_phone = request.data["phone"]
+        if clients.objects.filter(phone_number=client_phone).exists():
+            return Response(True, status=200)
+        else:
+            return Response("Not exist", status=404)
+
+
 
 @api_view(['DELETE',])
 def delete_item(request, pk):
