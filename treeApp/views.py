@@ -24,8 +24,8 @@ class workOrder(APIView):
         serializer = orders_serializers(orderList, many=True)
         return Response(serializer.data)
     def post(self , request):
-        user_name = self.request.data["user_id"]
-        client_name = self.request.data["client_id"]
+        user_id = self.request.data["user_id"]
+        client_id = self.request.data["client_id"]
         recived_date = self.request.data["recived_date"]
         delivery_date = self.request.data["delivery_date"]
         design_types = self.request.data["design_types"]
@@ -36,12 +36,12 @@ class workOrder(APIView):
         size_high=float( self.request.data["size_high"])
         materials= self.request.data["materials"]
         color= self.request.data["color"]
-        thickness= float(self.request.data["thickness"])
+        thickness= self.request.data["thickness"]
         Post_print_services= self.request.data["Post_print_services"]
         state= self.request.data["state"]
-        notes= self.request.data["notes"]
+        notes= str(self.request.data["notes"])
 
-        serializer = orders(data=request.data)
+        serializer = orders_serializers(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
@@ -49,8 +49,7 @@ class workOrder(APIView):
             return Response(serializer.data, status=404)
 
 class client(APIView):
-
-
+    permission_classes = []
     def __int__(self):
         pass
     def get(self, request):
@@ -61,7 +60,6 @@ class client(APIView):
         client_name = self.request.data["name"]
         client_phone = self.request.data["phone_number"]
         client_level = self.request.data["clientlevel"]
-
         serializer = client_serializers(data=request.data)
         if serializer.is_valid():
             serializer.save()

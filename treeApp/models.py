@@ -42,7 +42,7 @@ class clients(models.Model):
     id = models.AutoField(primary_key=True , auto_created=True)
     name = models.CharField(max_length=255 , default= None)
     phone_number = models.CharField(max_length=255 , default= None)
-    notes = models.CharField(max_length=255 , default= None)
+    notes = models.CharField(max_length=255 , default= None ,  null=True)
     clientlevel = models.CharField(max_length=1 ,  choices=levels ,default='B')
     def __str__(self):
         return self.name
@@ -74,7 +74,7 @@ class orders(models.Model):
     thickness = models.FloatField(null=True)
     Post_print_services = models.JSONField(blank =True , default=list)
     state = models.CharField(max_length=1 , choices=state ,null=False , default= "D")
-    notes = models.CharField(max_length=255, default=None)
+    notes = models.CharField(max_length=255, default="" , null= True)
     def __str__(self):
         return str(self.order_id)
 
