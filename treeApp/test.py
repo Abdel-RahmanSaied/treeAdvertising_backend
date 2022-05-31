@@ -3,27 +3,35 @@ import requests
 
 base_url = "http://127.0.0.1:8000/orders/"
 d = datetime.date(1997, 10, 19)
-data = {
-        "recived_date": d,
-        "delivery_date": d,
+data = """{
+        "user_id": 1,
+        "client_id": 1,
+        "recived_date": "2022-05-28",
+        "delivery_date": "2022-09-28",
         "design_types": "A",
-        "design_path": "dsf",
-        "design_category": ["x"],
-        "printing_type": ["x"],
+        "design_path": "ddddddd",
+        "design_category": [
+            "x"
+        ],
+        "printing_type": [
+            "x"
+        ],
         "size_width": 56.0,
         "size_high": 645.0,
-        "materials": "645",
-        "color": "gdf",
+        "materials": "dsaaa",
+        "color": "asddddd",
         "thickness": 12.2,
-        "Post_print_services": ["x"],
+        "Post_print_services": [
+            "x"
+        ],
         "state": "D",
-        "notes": "asd",
-        "user_id": 2,
-        "client_id": 1
-    }
+        "notes": "asd"
 
+    }"""
+
+# print(d)
 headers = {'Accept': '*/*; indent=4', 'Content-Type': 'application/json',
-           'Authorization': 'Token 2a78f3a94598e77134f4bd9e5abe219859646fe0'}
+           'Authorization': 'Token 497d1a25281fa5809049fdb30939658bbe9b78a7'}
 
 
 

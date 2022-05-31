@@ -16,7 +16,7 @@ import json
 # Create your views here.
 
 class workOrder(APIView):
-    permission_classes = []
+    # permission_classes = []
     def __init__(self):
         pass
     def get(self, request):
@@ -33,7 +33,7 @@ class workOrder(APIView):
         design_category= self.request.data["design_category"]
         printing_type= self.request.data["printing_type"]
         size_width=  self.request.data["size_width"]
-        size_high=float( self.request.data["size_high"])
+        size_high= self.request.data["size_high"]
         materials= self.request.data["materials"]
         color= self.request.data["color"]
         thickness= self.request.data["thickness"]
@@ -49,7 +49,7 @@ class workOrder(APIView):
             return Response("failed", status=401)
 
 class client(APIView):
-    permission_classes = []
+    # permission_classes = []
     def __int__(self):
         pass
     def get(self, request):
@@ -68,7 +68,7 @@ class client(APIView):
             return Response(serializer.data , status=404)
 
 @api_view(['POST', ])
-@permission_classes([])
+# @permission_classes([])
 def registration(request):
     username = request.data["username"]
     department = request.data["department"]
