@@ -114,13 +114,15 @@ def registration(request):
 
 
 @api_view(['POST', ])
+# @permission_classes([])
 def check_clientPhone(request):
     if request.method == 'POST':
         client_phone = request.data["phone"]
         if clients.objects.filter(phone_number=client_phone).exists():
-            return Response(True, status=200)
+            data = clients.objects.get(phone_number=client_phone)
+            return Response(data.id, status=200)
         else:
-            return Response("Not exist", status=404)
+            return Response("client does not exist", status=404)
 
 
 @api_view(['DELETE',])
