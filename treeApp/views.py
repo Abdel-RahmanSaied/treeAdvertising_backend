@@ -6,7 +6,8 @@ from .serializers import client_serializers
 from .serializers import  orders_serializers, client_serializers, users_serializers
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
@@ -15,6 +16,7 @@ import json
 # Create your views here.
 
 class workOrder(APIView):
+    permission_classes = []
     def __init__(self):
         pass
     def get(self, request):
@@ -30,23 +32,25 @@ class workOrder(APIView):
         design_path= self.request.data["design_path"]
         design_category= self.request.data["design_category"]
         printing_type= self.request.data["printing_type"]
-        size_width= self.request.data["size_width"]
-        size_high= self.request.data["size_high"]
+        size_width=  self.request.data["size_width"]
+        size_high=float( self.request.data["size_high"])
         materials= self.request.data["materials"]
         color= self.request.data["color"]
-        thickness= self.request.data["thickness"]
+        thickness= float(self.request.data["thickness"])
         Post_print_services= self.request.data["Post_print_services"]
         state= self.request.data["state"]
+        notes= self.request.data["notes"]
 
         serializer = orders(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
         else:
-            return Response(serializer.data , status=404)
-
+            return Response(serializer.data, status=404)
 
 class client(APIView):
+
+
     def __int__(self):
         pass
     def get(self, request):
@@ -66,6 +70,7 @@ class client(APIView):
             return Response(serializer.data , status=404)
 
 @api_view(['POST', ])
+@permission_classes([])
 def registration(request):
     username = request.data["username"]
     department = request.data["department"]
@@ -83,12 +88,12 @@ def registration(request):
         return Response(data)
     else:
         return Response('password must match.', status=401)
-        # return Response(serializer.errors)
+
 
 ### Example ###
 #Register# {  "name": "mohamed", "username": "mok11", "department": "M","password1": "123", "password2": "123" }
 #login# { "username":"mok11", "password":"123"}
-
+# 'Authorization' : 'Token 70dbe36a87dfe681f98e6a8870150138e7bd4aa3'
 
 # @api_view(['POST', ])
 # def registration(request):
@@ -120,24 +125,30 @@ def check_clientPhone(request):
             return Response("Not exist", status=404)
 
 
-
-
 @api_view(['DELETE',])
+@permission_classes((IsAuthenticated,))
 def delete_item(request, pk):
-      if request.method == 'DELETE':
+    user_instance = Users.objects.get(user=request.user)
+    if user_instance.department == 'M':
+        if request.method == 'DELETE':
             item=orders.objects.filter(order_id=pk)
             item.delete()
             return Response()
+    else:
+        return Response({'Response':"You don't have permission to delete this."})
+
 
 @api_view(['PUT',])
+@permission_classes((IsAuthenticated,))
 def update_item(request,pk):
+
     json_response = json.load(request)
-    print(json_response)
+    # print(json_response)
     obj_list = ["recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
                 "thickness","Post_print_services","state"]
 
-    for object in obj_list :
-        print(object)
+    for object in obj_list:
+        # print(object)
         if object in json_response:
             #doctor_requested_id = json_response[object]
             verified_object = orders.objects.filter(order_id=pk)
