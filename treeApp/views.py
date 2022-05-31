@@ -39,14 +39,14 @@ class workOrder(APIView):
         thickness= self.request.data["thickness"]
         Post_print_services= self.request.data["Post_print_services"]
         state= self.request.data["state"]
-        notes= str(self.request.data["notes"])
+        notes= self.request.data["notes"]
 
         serializer = orders_serializers(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
         else:
-            return Response(serializer.data, status=404)
+            return Response("failed", status=401)
 
 class client(APIView):
     permission_classes = []
