@@ -2,6 +2,7 @@ from django.urls import path
 from .views import *
 from rest_framework.authtoken import views
     # URLConfiguration
+    # Take a lock at example.json
 urlpatterns = [
     path('register', registration , name="register"),
     path('login/', views.obtain_auth_token, name='login'),
@@ -11,6 +12,8 @@ urlpatterns = [
     path('deleteitem/<int:pk>/', delete_item, name="deleteOrder"),
     path('updateItem/<int:pk>/', update_item, name="updateOrder"),
     path('clientPhone/', check_clientPhone, name="clientPhone"),
+    path('getUnfinishedOrders/', get_unfinishedOrders, name="getUnfinishedOrders"),
+    path('searchByDate/', search_byDate, name="searchByDate"),
 
 
 ]

@@ -3,14 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from .serializers import client_serializers
-from .serializers import  orders_serializers, client_serializers, users_serializers
+from .serializers import  orders_serializers, client_serializers, users_serializers, search_byDate_serializers
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-
+from django.db.models import Q
 import json
 
 # Create your views here.
@@ -60,6 +60,8 @@ class client(APIView):
         client_name = self.request.data["name"]
         client_phone = self.request.data["phone_number"]
         client_level = self.request.data["clientlevel"]
+        if clients.objects.filter(phone_number=client_phone).exists():
+            return Response({"Response": "The phone number is already registered with another client"}, status=406)
         serializer = client_serializers(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -83,34 +85,11 @@ def registration(request):
         nuser.save()
         data = request.data
         data.update({'token':token})
-        return Response(data)
+        return Response(data, status=201)
     else:
         return Response('password must match.', status=401)
 
 
-### Example ###
-#Register# {  "name": "mohamed", "username": "mok11", "department": "M","password1": "123", "password2": "123" }
-#login# { "username":"mok11", "password":"123"}
-# 'Authorization' : 'Token 70dbe36a87dfe681f98e6a8870150138e7bd4aa3'
-
-# @api_view(['POST', ])
-# def registration(request):
-#     if request.method == 'POST':
-#         department = request.data["department"]
-#         serializer = users_serializers(data=request.data)
-#         data = {}
-#         if serializer.is_valid():
-#             account = serializer.save()
-#             nuser = Users.objects.create(user=account, name=account.username, department=department)
-#             nuser.save()
-#             data['response'] = "successfully registered a new user."
-#             data['name'] = account.username
-#             data['department'] = account.department
-#             token = Token.objects.get(user=account).key
-#             data['token'] = token
-#         else:
-#             data = serializer.errors
-#         return Response(data)
 
 
 @api_view(['POST', ])
@@ -119,10 +98,41 @@ def check_clientPhone(request):
     if request.method == 'POST':
         client_phone = request.data["phone"]
         if clients.objects.filter(phone_number=client_phone).exists():
-            data = clients.objects.get(phone_number=client_phone)
-            return Response(data.id, status=200)
+            c_instance = clients.objects.get(phone_number=client_phone)
+            data = {"id":c_instance.id, "name": c_instance.name, "phone_number": c_instance.phone_number, "clientlevel": c_instance.clientlevel, "notes": c_instance.notes}
+            return Response(data, status=200)
         else:
-            return Response("client does not exist", status=404)
+            return Response({"Response": "client does not exist"}, status=404)
+
+
+@api_view(['POST', ])
+def search_byDate(request):
+    if request.method == 'POST':
+        from_date = request.data["from_date"]
+        to_date = request.data["to_date"]
+        state = request.data["state"]
+        serializer = search_byDate_serializers(data=request.data)
+        if serializer.is_valid():
+            q1 = orders.objects.filter(date__range=[from_date, to_date])
+            if state == 'all':
+                return Response(orders_serializers(q1, many=True).data)
+            elif state == 'finished':
+                q2 = q1.filter(state='F')
+                return Response(orders_serializers(q2, many=True).data)
+            elif state == 'unfinished':
+                q3 = q1.exclude(state='F')
+                return Response(orders_serializers(q3, many=True).data)
+            else:
+                return Response({"Response": "Invalid data"}, status=404)
+#   {"from_date":"2022-06-01","to_date":"2022-06-02","state":"unfinished"}
+#   state=["all", "finished", "unfinished"]
+
+@api_view(['GET', ])
+def get_unfinishedOrders(request):
+    if request.method == 'GET':
+        q2 = orders.objects.exclude(state='F')
+        serializer = orders_serializers(q2, many=True)
+        return Response(serializer.data)
 
 
 @api_view(['DELETE',])
@@ -133,25 +143,27 @@ def delete_item(request, pk):
         if request.method == 'DELETE':
             item=orders.objects.filter(order_id=pk)
             item.delete()
-            return Response()
+            return Response({'Response': "successfully deleted."}, status=202)
     else:
-        return Response({'Response':"You don't have permission to delete this."})
+        return Response({'Response': "You don't have permission to delete this."}, status=101)
 
 
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated,))
 def update_item(request,pk):
+    user_instance = Users.objects.get(user=request.user)
+    if user_instance.department == 'M':
+        json_response = json.load(request)
+        # print(json_response)
+        obj_list = ["recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
+                    "thickness","Post_print_services","state"]
 
-    json_response = json.load(request)
-    # print(json_response)
-    obj_list = ["recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
-                "thickness","Post_print_services","state"]
-
-    for object in obj_list:
-        # print(object)
-        if object in json_response:
-            #doctor_requested_id = json_response[object]
-            verified_object = orders.objects.filter(order_id=pk)
-            verified_object.update(**json_response)
-    return Response()
-
+        for object in obj_list:
+            # print(object)
+            if object in json_response:
+                #doctor_requested_id = json_response[object]
+                verified_object = orders.objects.filter(order_id=pk)
+                verified_object.update(**json_response)
+        return Response({'Response': "successfully updated."},status=200)
+    else:
+        return Response({'Response': "You don't have permission to delete this."}, status=101)

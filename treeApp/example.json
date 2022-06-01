@@ -1,0 +1,39 @@
+
+[ {
+  "http://127.0.0.1:8000/orders/" : {
+        "recived_date": "2022-05-28",
+        "delivery_date": "2022-09-28",
+        "design_types": "A",
+        "design_path": "dsf",
+        "design_category": ["x"],
+        "printing_type": ["x"],
+        "size_width": 56.0,
+        "size_high": 645.0,
+        "materials": "645",
+        "color": "gdf",
+        "thickness": 12.2,
+        "Post_print_services": ["x"],
+        "state": "D",
+        "notes": "asd",
+        "user_id": 2,
+        "client_id": 1 },
+
+  "http://127.0.0.1:8000/searchByDate/": {"from_date":"2022-06-01","to_date":"2022-06-02","state":"unfinished"},
+
+  "http://127.0.0.1:8000/register/": {  "name": "mohamed", "username": "mok11", "department": "M","password1": "123", "password2": "123" },
+
+  "http://127.0.0.1:8000/login/" :  { "username":"mok11", "password":"123"},
+
+  "http://127.0.0.1:8000/clients/" : { "name": "test", "phone_number": "01011", "notes": "nothing", "clientlevel": "B"},
+
+  "http://127.0.0.1:8000/clientPhone/" : { "phone":"0111011"},
+
+  "http://127.0.0.1:8000/getUnfinishedOrders/" : "GET",
+
+  "http://127.0.0.1:8000/updateItem/5/" : "PUT",
+
+  "http://127.0.0.1:8000/deleteitem/4/" : "DEL",
+
+  "Authorization" : "Token 70dbe36a87dfe681f98e6a8870150138e7bd4aa3"
+  }
+]
