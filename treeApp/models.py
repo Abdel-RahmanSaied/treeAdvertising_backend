@@ -83,7 +83,7 @@ class requirements(models.Model):
     product_name = models.CharField(max_length=255, )
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    acceptable_by = models.CharField(max_length=255, default="", null=True)
+    acceptable_by = models.CharField(max_length=255, default="", null=False)
     def __str__(self):
         return self.product_name
 

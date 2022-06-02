@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
-from .serializers import client_serializers
 from .serializers import *
 
 from rest_framework.response import Response
@@ -70,6 +69,7 @@ class client(APIView):
             return Response(serializer.data , status=404)
 
 class requirements_view(APIView):
+    #permission_classes = []
     def __int__(self):
         pass
     def get(self, request):
@@ -77,17 +77,39 @@ class requirements_view(APIView):
         serializer = requirements_serializers(requirements_list, many=True)
         return Response(serializer.data)
     def post(self, request):
-        serializer = requirements_serializers(data=request.data)
         user_instance = Users.objects.get(user=request.user)
+        user_id = user_instance.id
+        print(user_id)
+        product_name = str(self.request.data["product_name"])
+        quantity = int(self.request.data["quantity"])
+        acceptable_by = str(self.request.data["acceptable_by"])
+        request.data["user_id"] = user_id
+        serializer = requirements_serializers(data=request.data)
+        print(serializer.initial_data)
+
         if serializer.is_valid():
-            user_id = user_instance.user
-            product_name = self.request.data["product_name"]
-            quantity = self.request.data["quantity"]
-            acceptable_by = self.request.data["acceptable_by"]
             serializer.save()
             return Response(serializer.data, status=201)
         else:
-            return Response(serializer.data, status=404)
+            print(serializer.errors)
+            return Response(serializer.data, status=400)
+
+@api_view(['PUT',])
+@permission_classes((IsAuthenticated,))
+def update_requirment_item(request,pk):
+    print("xxxxxxxxxxxxxxxxx")
+    user_instance = Users.objects.get(user=request.user)
+    json_response = json.load(request)
+    print(json_response)
+    obj_list = ["product_name","quantity","acceptable_by"]
+    for object in obj_list:
+        # print(object)
+        if object in json_response:
+            #doctor_requested_id = json_response[object]
+            verified_object = requirements.objects.filter(id=pk)
+            verified_object.update(**json_response)
+    return Response({'Response': "successfully updated."},status=200)
+
 
 
 
@@ -99,6 +121,8 @@ def registration(request):
     password1 = request.data["password1"]
     password2 = request.data["password2"]
     serializer = users_serializers(data=request.data)
+
+
     if serializer.is_valid() and password1 == password2:
         user = User.objects.create_user(username=username, password=password1)
         user.save()
@@ -198,7 +222,6 @@ def update_item(request,pk):
         # print(json_response)
         obj_list = ["recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
                     "thickness","Post_print_services","state"]
-
         for object in obj_list:
             # print(object)
             if object in json_response:
