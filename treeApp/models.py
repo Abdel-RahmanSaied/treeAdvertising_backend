@@ -85,7 +85,7 @@ class requirements(models.Model):
     quantity = models.IntegerField()
     acceptable_by = models.CharField(max_length=255, default="", null=True)
     def __str__(self):
-        return self.id
+        return self.product_name
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
