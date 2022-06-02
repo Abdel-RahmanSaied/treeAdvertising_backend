@@ -9,11 +9,12 @@ urlpatterns = [
 
     path('orders/', workOrder.as_view()),
     path('clients/', client.as_view()),
+    path('requirements/', requirements_view.as_view()),
     path('deleteitem/<int:pk>/', delete_item, name="deleteOrder"),
     path('updateItem/<int:pk>/', update_item, name="updateOrder"),
     path('clientPhone/', check_clientPhone, name="clientPhone"),
     path('getUnfinishedOrders/', get_unfinishedOrders, name="getUnfinishedOrders"),
     path('searchByDate/', search_byDate, name="searchByDate"),
-
+    path('searchByOrderId/', search_ByOrderId, name="searchByOrderId"),
 
 ]

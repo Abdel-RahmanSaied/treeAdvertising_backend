@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from .serializers import client_serializers
-from .serializers import  orders_serializers, client_serializers, users_serializers, search_byDate_serializers
+from .serializers import *
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -69,6 +69,28 @@ class client(APIView):
         else:
             return Response(serializer.data , status=404)
 
+class requirements_view(APIView):
+    def __int__(self):
+        pass
+    def get(self, request):
+        requirements_list = requirements.objects.all()
+        serializer = requirements_serializers(requirements_list, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = requirements_serializers(data=request.data)
+        user_instance = Users.objects.get(user=request.user)
+        if serializer.is_valid():
+            user_id = user_instance.user
+            product_name = self.request.data["product_name"]
+            quantity = self.request.data["quantity"]
+            acceptable_by = self.request.data["acceptable_by"]
+            serializer.save()
+            return Response(serializer.data, status=201)
+        else:
+            return Response(serializer.data, status=404)
+
+
+
 @api_view(['POST', ])
 # @permission_classes([])
 def registration(request):
@@ -88,8 +110,6 @@ def registration(request):
         return Response(data, status=201)
     else:
         return Response('password must match.', status=401)
-
-
 
 
 @api_view(['POST', ])
@@ -125,6 +145,27 @@ def search_byDate(request):
             else:
                 return Response({"Response": "Invalid data"}, status=404)
 #   {"from_date":"2022-06-01","to_date":"2022-06-02","state":"unfinished"}
+#   state=["all", "finished", "unfinished"]
+
+@api_view(['POST', ])
+def search_ByOrderId(request):
+    if request.method == 'POST':
+        orderId = request.data["order_id"]
+        state = request.data["state"]
+        serializer = orderID_serializers(data=request.data)
+        if serializer.is_valid():
+            q1 = orders.objects.filter(order_id=orderId)
+            if state == 'all':
+                return Response(orders_serializers(q1, many=True).data)
+            elif state == 'finished':
+                q2 = q1.filter(state='F')
+                return Response(orders_serializers(q2, many=True).data)
+            elif state == 'unfinished':
+                q3 = q1.exclude(state='F')
+                return Response(orders_serializers(q3, many=True).data)
+            else:
+                return Response({"Response": "Invalid data"}, status=404)
+#   {"order_id":"5","state":"unfinished"}
 #   state=["all", "finished", "unfinished"]
 
 @api_view(['GET', ])

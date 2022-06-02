@@ -31,7 +31,7 @@ state = (
 
 class Users(models.Model) :
     id = models.AutoField(primary_key=True , auto_created=True)
-    user =models.OneToOneField(User,null=True,blank=True,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,null=True,blank=True,on_delete=models.CASCADE)
     name = models.CharField(max_length=255 , null= False)
     department=models.CharField(max_length=1 ,  choices=dapertments , null= False)
 
@@ -78,6 +78,14 @@ class orders(models.Model):
     def __str__(self):
         return str(self.order_id)
 
+class requirements(models.Model):
+    id = models.AutoField(primary_key=True , auto_created=True)
+    product_name = models.CharField(max_length=255, )
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    acceptable_by = models.CharField(max_length=255, default="", null=True)
+    def __str__(self):
+        return self.id
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

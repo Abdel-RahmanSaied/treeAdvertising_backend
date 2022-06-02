@@ -20,9 +20,13 @@
 
   "http://127.0.0.1:8000/searchByDate/": {"from_date":"2022-06-01","to_date":"2022-06-02","state":"unfinished"},
 
+  "http://127.0.0.1:8000/searchByOrderId/": {"order_id":"5","state":"unfinished"},
+
   "http://127.0.0.1:8000/register/": {  "name": "mohamed", "username": "mok11", "department": "M","password1": "123", "password2": "123" },
 
   "http://127.0.0.1:8000/login/" :  { "username":"mok11", "password":"123"},
+
+  "http://127.0.0.1:8000/requirements/" :  { "product_name":"testP", "quantity":1,"acceptable_by": "" },
 
   "http://127.0.0.1:8000/clients/" : { "name": "test", "phone_number": "01011", "notes": "nothing", "clientlevel": "B"},
 
