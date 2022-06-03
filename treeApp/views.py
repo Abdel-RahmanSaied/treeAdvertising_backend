@@ -23,22 +23,25 @@ class workOrder(APIView):
         serializer = orders_serializers(orderList, many=True)
         return Response(serializer.data)
     def post(self , request):
-        user_id = self.request.data["user_id"]
+        user_instance = Users.objects.get(user=request.user)
+        user_id = user_instance.id
+        self.request.data["user_id"] = user_id
+        # user_id = self.request.data["user_id"]
         client_id = self.request.data["client_id"]
         recived_date = self.request.data["recived_date"]
         delivery_date = self.request.data["delivery_date"]
         design_types = self.request.data["design_types"]
-        design_path= self.request.data["design_path"]
-        design_category= self.request.data["design_category"]
-        printing_type= self.request.data["printing_type"]
-        size_width=  self.request.data["size_width"]
-        size_high= self.request.data["size_high"]
-        materials= self.request.data["materials"]
-        color= self.request.data["color"]
-        thickness= self.request.data["thickness"]
-        Post_print_services= self.request.data["Post_print_services"]
-        state= self.request.data["state"]
-        notes= self.request.data["notes"]
+        design_path = self.request.data["design_path"]
+        design_category = self.request.data["design_category"]
+        printing_type = self.request.data["printing_type"]
+        size_width = self.request.data["size_width"]
+        size_high = self.request.data["size_high"]
+        materials = self.request.data["materials"]
+        color = self.request.data["color"]
+        thickness = self.request.data["thickness"]
+        Post_print_services = self.request.data["Post_print_services"]
+        state = self.request.data["state"]
+        notes = self.request.data["notes"]
 
         serializer = orders_serializers(data=request.data)
         if serializer.is_valid():
