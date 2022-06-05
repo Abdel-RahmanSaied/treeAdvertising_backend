@@ -50,6 +50,7 @@ class clients(models.Model):
 class orders(models.Model):
     order_id = models.AutoField(primary_key=True , auto_created=True)
     user_id = models.ForeignKey(Users ,  on_delete=models.CASCADE)
+    user_name = models.CharField(max_length=255, null=False, default="")
     client_id = models.ForeignKey(clients , on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     recived_date = models.DateField()
@@ -82,6 +83,7 @@ class requirements(models.Model):
     id = models.AutoField(primary_key=True , auto_created=True)
     product_name = models.CharField(max_length=255, )
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_name = models.CharField(max_length=255, null=False, default="")
     quantity = models.IntegerField()
     acceptable_by = models.CharField(max_length=255, default="", null=False)
     def __str__(self):

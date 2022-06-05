@@ -24,8 +24,8 @@ class workOrder(APIView):
         return Response(serializer.data)
     def post(self , request):
         user_instance = Users.objects.get(user=request.user)
-        user_id = user_instance.id
-        self.request.data["user_id"] = user_id
+        self.request.data["user_id"] = user_instance.id
+        self.request.data["user_name"] = user_instance.name
         # user_id = self.request.data["user_id"]
         client_id = self.request.data["client_id"]
         recived_date = self.request.data["recived_date"]
@@ -81,12 +81,11 @@ class requirements_view(APIView):
         return Response(serializer.data)
     def post(self, request):
         user_instance = Users.objects.get(user=request.user)
-        user_id = user_instance.id
-        print(user_id)
         product_name = str(self.request.data["product_name"])
         quantity = int(self.request.data["quantity"])
         acceptable_by = str(self.request.data["acceptable_by"])
-        request.data["user_id"] = user_id
+        request.data["user_id"] = user_instance.id
+        request.data["user_name"] = user_instance.name
         serializer = requirements_serializers(data=request.data)
         print(serializer.initial_data)
 
