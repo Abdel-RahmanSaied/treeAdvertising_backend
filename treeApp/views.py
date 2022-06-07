@@ -113,6 +113,18 @@ def update_requirment_item(request,pk):
     return Response({'Response': "successfully updated."},status=200)
 
 
+@api_view(['DELETE',])
+@permission_classes((IsAuthenticated,))
+def delete_requirment_item(request, pk):
+    user_instance = Users.objects.get(user=request.user)
+    if user_instance.department == 'M':
+        if request.method == 'DELETE':
+            item=requirements.objects.filter(id=pk)
+            item.delete()
+            return Response({'Response': "successfully deleted."}, status=202)
+    else:
+        return Response({'Response': "You don't have permission to delete this."}, status=101)
+
 
 
 @api_view(['POST', ])

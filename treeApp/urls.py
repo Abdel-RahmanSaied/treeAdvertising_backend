@@ -11,6 +11,7 @@ urlpatterns = [
     path('clients/', client.as_view()),
     path('requirements/', requirements_view.as_view()),
     path('deleteitem/<int:pk>/', delete_item, name="deleteOrder"),
+    path('deleteRequirement/<int:pk>/', delete_requirment_item, name="deleteRequirement"),
     path('updateItem/<int:pk>/', update_item, name="updateOrder"),
     path('updateRequiredItem/<int:pk>/', update_requirment_item , name="updateRequirment"),
     path('clientPhone/', check_clientPhone, name="clientPhone"),
