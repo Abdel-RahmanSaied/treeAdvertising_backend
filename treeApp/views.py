@@ -28,6 +28,9 @@ class workOrder(APIView):
         self.request.data["user_name"] = user_instance.name
         # user_id = self.request.data["user_id"]
         client_id = self.request.data["client_id"]
+        self.request.data["client_name"] = str(clients.objects.get(id=client_id))
+        accepted_by = self.request.data["accepted_by"]
+        img_path = self.request.data["img_path"]
         recived_date = self.request.data["recived_date"]
         delivery_date = self.request.data["delivery_date"]
         design_types = self.request.data["design_types"]
@@ -42,13 +45,12 @@ class workOrder(APIView):
         Post_print_services = self.request.data["Post_print_services"]
         state = self.request.data["state"]
         notes = self.request.data["notes"]
-
         serializer = orders_serializers(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
         else:
-            return Response("failed", status=401)
+            return Response({"Response" : "invalid data"}, status=404)
 
 class client(APIView):
     # permission_classes = []
@@ -245,3 +247,16 @@ def update_item(request,pk):
         return Response({'Response': "successfully updated."},status=200)
     else:
         return Response({'Response': "You don't have permission to delete this."}, status=101)
+
+@api_view(['DELETE',])
+@permission_classes((IsAuthenticated,))
+def delete_client(request, pk):
+    user_instance = Users.objects.get(user=request.user)
+    if user_instance.department == 'M':
+        if request.method == 'DELETE':
+            item=clients.objects.filter(id=pk)
+            item.delete()
+            return Response({'Response': "successfully deleted."}, status=202)
+    else:
+        return Response({'Response': "You don't have permission to delete this."}, status=101)
+

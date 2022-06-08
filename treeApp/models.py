@@ -52,6 +52,9 @@ class orders(models.Model):
     user_id = models.ForeignKey(Users ,  on_delete=models.CASCADE)
     user_name = models.CharField(max_length=255, null=False, default="")
     client_id = models.ForeignKey(clients , on_delete=models.CASCADE)
+    client_name = models.CharField(max_length=255, null=False, default="")
+    accepted_by = models.CharField(max_length=255, default="", null=False)
+    img_path = models.CharField(max_length=255, null=True)
     date = models.DateField(auto_now_add=True)
     recived_date = models.DateField()
     '''
