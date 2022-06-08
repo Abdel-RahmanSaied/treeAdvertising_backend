@@ -236,7 +236,7 @@ def update_item(request,pk):
     if user_instance.department == 'M':
         json_response = json.load(request)
         # print(json_response)
-        obj_list = ["recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
+        obj_list = ["client_name","accepted_by","img_path","recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
                     "thickness","Post_print_services","state"]
         for object in obj_list:
             # print(object)
