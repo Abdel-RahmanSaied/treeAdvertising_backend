@@ -8,6 +8,7 @@ urlpatterns = [
     path('login/', views.obtain_auth_token, name='login'),
 
     path('orders/', workOrder.as_view()),
+    path('inbox_orders/' , inbox_order , name="inboxOrders"),
     path('clients/', client.as_view()),
     path('requirements/', requirements_view.as_view()),
     path('deleteitem/<int:pk>/', delete_item, name="deleteOrder"),

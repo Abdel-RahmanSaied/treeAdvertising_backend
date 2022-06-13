@@ -42,7 +42,7 @@ class clients(models.Model):
     id = models.AutoField(primary_key=True , auto_created=True)
     name = models.CharField(max_length=255 , default= None)
     phone_number = models.CharField(max_length=255 , default= None)
-    notes = models.CharField(max_length=255 , default= None ,  null=True)
+    notes = models.CharField(max_length=255 , default ="nothing" ,null=True)
     clientlevel = models.CharField(max_length=1 ,  choices=levels ,default='B')
     def __str__(self):
         return self.name
@@ -50,7 +50,7 @@ class clients(models.Model):
 class orders(models.Model):
     order_id = models.AutoField(primary_key=True , auto_created=True)
     user_id = models.ForeignKey(Users ,  on_delete=models.CASCADE)
-    user_name = models.CharField(max_length=255, null=False, default="")
+    user_name = models.CharField(max_length=255, null=False, default="") #newupdate
     client_id = models.ForeignKey(clients , on_delete=models.CASCADE)
     client_name = models.CharField(max_length=255, null=False, default="")
     accepted_by = models.CharField(max_length=255, default="", null=False)
@@ -58,7 +58,7 @@ class orders(models.Model):
     date = models.DateField(auto_now_add=True)
     recived_date = models.DateField()
     '''
-    use of date 
+    use of date
     # datetime.date
     d = datetime.date(1997, 10, 19)
     '''
@@ -79,6 +79,8 @@ class orders(models.Model):
     Post_print_services = models.JSONField(blank =True , default=list)
     state = models.CharField(max_length=1 , choices=state ,null=False , default= "D")
     notes = models.CharField(max_length=255, default="" , null= True)
+
+    target_dapertment = models.JSONField(blank =True , default=list)
     def __str__(self):
         return str(self.order_id)
 
@@ -86,7 +88,7 @@ class requirements(models.Model):
     id = models.AutoField(primary_key=True , auto_created=True)
     product_name = models.CharField(max_length=255, )
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
-    user_name = models.CharField(max_length=255, null=False, default="")
+    user_name = models.CharField(max_length=255, null=False, default="") #newupdate
     quantity = models.IntegerField()
     acceptable_by = models.CharField(max_length=255, default="", null=False)
     def __str__(self):

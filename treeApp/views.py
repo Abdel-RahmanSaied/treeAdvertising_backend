@@ -14,6 +14,22 @@ import json
 
 # Create your views here.
 
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated,))
+def inbox_order(request):
+    user_instance = Users.objects.get(user=request.user)
+    department = user_instance.department
+    if request.method == 'GET':
+        if department == 'D':
+            query1 = orders.objects.exclude(target_dapertment=["P"])
+            serializer1 = orders_serializers(query1, many=True)
+            return Response(serializer1.data)
+        if department == "P" :
+            query2 = orders.objects.exclude(target_dapertment=["D"])
+            serializer2 = orders_serializers(query2, many=True)
+            return Response(serializer2.data)
+
+
 class workOrder(APIView):
     # permission_classes = []
     def __init__(self):
@@ -34,23 +50,25 @@ class workOrder(APIView):
         recived_date = self.request.data["recived_date"]
         delivery_date = self.request.data["delivery_date"]
         design_types = self.request.data["design_types"]
-        design_path = self.request.data["design_path"]
-        design_category = self.request.data["design_category"]
-        printing_type = self.request.data["printing_type"]
-        size_width = self.request.data["size_width"]
-        size_high = self.request.data["size_high"]
-        materials = self.request.data["materials"]
-        color = self.request.data["color"]
-        thickness = self.request.data["thickness"]
-        Post_print_services = self.request.data["Post_print_services"]
-        state = self.request.data["state"]
-        notes = self.request.data["notes"]
+        design_path= self.request.data["design_path"]
+        design_category= self.request.data["design_category"]
+        printing_type= self.request.data["printing_type"]
+        size_width=  self.request.data["size_width"]
+        size_high= self.request.data["size_high"]
+        materials= self.request.data["materials"]
+        color= self.request.data["color"]
+        thickness= self.request.data["thickness"]
+        Post_print_services= self.request.data["Post_print_services"]
+        state= self.request.data["state"]
+        notes= self.request.data["notes"]
+        target_department = self.request.data["target_dapertment"]
+
         serializer = orders_serializers(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
         else:
-            return Response({"Response" : "invalid data"}, status=404)
+            return Response({"Response" : "invalid data"}, status=401)
 
 class client(APIView):
     # permission_classes = []
@@ -89,7 +107,6 @@ class requirements_view(APIView):
         request.data["user_id"] = user_instance.id
         request.data["user_name"] = user_instance.name
         serializer = requirements_serializers(data=request.data)
-        print(serializer.initial_data)
 
         if serializer.is_valid():
             serializer.save()
@@ -101,10 +118,8 @@ class requirements_view(APIView):
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated,))
 def update_requirment_item(request,pk):
-    print("xxxxxxxxxxxxxxxxx")
     user_instance = Users.objects.get(user=request.user)
     json_response = json.load(request)
-    print(json_response)
     obj_list = ["product_name","quantity","acceptable_by"]
     for object in obj_list:
         # print(object)
@@ -113,7 +128,6 @@ def update_requirment_item(request,pk):
             verified_object = requirements.objects.filter(id=pk)
             verified_object.update(**json_response)
     return Response({'Response': "successfully updated."},status=200)
-
 
 @api_view(['DELETE',])
 @permission_classes((IsAuthenticated,))
@@ -125,8 +139,7 @@ def delete_requirment_item(request, pk):
             item.delete()
             return Response({'Response': "successfully deleted."}, status=202)
     else:
-        return Response({'Response': "You don't have permission to delete this."}, status=101)
-
+        return Response({'Response': "You don't have permission to delete this."}, status=404)
 
 
 @api_view(['POST', ])
@@ -159,7 +172,7 @@ def check_clientPhone(request):
         client_phone = request.data["phone"]
         if clients.objects.filter(phone_number=client_phone).exists():
             c_instance = clients.objects.get(phone_number=client_phone)
-            data = {"id":c_instance.id, "name": c_instance.name, "phone_number": c_instance.phone_number, "clientlevel": c_instance.clientlevel, "notes": c_instance.notes}
+            data = {"id":c_instance.id, "name": c_instance.name, "phone_number": c_instance.phone_number, "clientlevel": c_instance.clientlevel, "notes": c_instance.notes, "Response": "successful"}
             return Response(data, status=200)
         else:
             return Response({"Response": "client does not exist"}, status=404)
@@ -226,7 +239,7 @@ def delete_item(request, pk):
             item.delete()
             return Response({'Response': "successfully deleted."}, status=202)
     else:
-        return Response({'Response': "You don't have permission to delete this."}, status=101)
+        return Response({'Response': "You don't have permission to delete this."}, status=404)
 
 
 @api_view(['PUT',])
@@ -237,7 +250,7 @@ def update_item(request,pk):
         json_response = json.load(request)
         # print(json_response)
         obj_list = ["client_name","accepted_by","img_path","recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
-                    "thickness","Post_print_services","state"]
+                    "thickness","Post_print_services","state" , "target_dapertment"]
         for object in obj_list:
             # print(object)
             if object in json_response:
@@ -246,7 +259,8 @@ def update_item(request,pk):
                 verified_object.update(**json_response)
         return Response({'Response': "successfully updated."},status=200)
     else:
-        return Response({'Response': "You don't have permission to delete this."}, status=101)
+        return Response({'Response': "You don't have permission to update this."}, status=404)
+
 
 @api_view(['DELETE',])
 @permission_classes((IsAuthenticated,))
@@ -256,7 +270,8 @@ def delete_client(request, pk):
         if request.method == 'DELETE':
             item=clients.objects.filter(id=pk)
             item.delete()
-            return Response({'Response': "successfully deleted."}, status=202)
+            return Response({'Response': f"Client {pk} successfully deleted."}, status=202)
     else:
-        return Response({'Response': "You don't have permission to delete this."}, status=101)
+        return Response({'Response': "You don't have permission to delete this."}, status=404)
+
 
