@@ -150,19 +150,21 @@ def registration(request):
     password1 = request.data["password1"]
     password2 = request.data["password2"]
     serializer = users_serializers(data=request.data)
-
-
-    if serializer.is_valid() and password1 == password2:
-        user = User.objects.create_user(username=username, password=password1)
-        user.save()
-        nuser = Users.objects.create(user=user, name=username, department=department )
-        token = Token.objects.get(user=user).key
-        nuser.save()
-        data = request.data
-        data.update({'token':token})
-        return Response(data, status=201)
+    if User.objects.filter(username=username).exists():
+        return Response({"Response":"username already exist !"}, status=401)
     else:
-        return Response('password must match.', status=401)
+        if serializer.is_valid() and password1 == password2:
+            user = User.objects.create_user(username=username, password=password1)
+            user.save()
+            nuser = Users.objects.create(user=user, name=username, department=department )
+            token = Token.objects.get(user=user).key
+            nuser.save()
+            data = request.data
+            data.update({'token':token})
+            data.update({'Response':'Successful created'})
+            return Response(data, status=201)
+        else:
+            return Response({"Response":'password must match.'}, status=401)
 
 
 @api_view(['POST', ])
@@ -252,7 +254,6 @@ def update_item(request,pk):
         obj_list = ["client_name","accepted_by","img_path","recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
                     "thickness","Post_print_services","state" , "target_dapertment"]
         for object in obj_list:
-            # print(object)
             if object in json_response:
                 #doctor_requested_id = json_response[object]
                 verified_object = orders.objects.filter(order_id=pk)
