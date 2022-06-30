@@ -48,12 +48,13 @@ class clients(models.Model):
         return self.name
 
 class orders(models.Model):
-    order_id = models.AutoField(primary_key=True , auto_created=True)
+
+    order_id = models.IntegerField(primary_key=True)
     user_id = models.ForeignKey(Users ,  on_delete=models.CASCADE)
     user_name = models.CharField(max_length=255, null=False, default="") #newupdate
     client_id = models.ForeignKey(clients , on_delete=models.CASCADE)
     client_name = models.CharField(max_length=255, null=False, default="")
-    accepted_by = models.CharField(max_length=255, default="", null=False)
+    accepted_by = models.CharField(max_length=255, default="Not Accepted yet", null=False)
     img_path = models.CharField(max_length=255, null=True)
     date = models.DateField(auto_now_add=True)
     recived_date = models.DateField()
@@ -81,8 +82,11 @@ class orders(models.Model):
     notes = models.CharField(max_length=255, default="" , null= True)
 
     target_dapertment = models.JSONField(blank =True , default=list)
+
     def __str__(self):
         return str(self.order_id)
+
+
 
 class requirements(models.Model):
     id = models.AutoField(primary_key=True , auto_created=True)

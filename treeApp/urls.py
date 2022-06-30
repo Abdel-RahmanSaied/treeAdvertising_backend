@@ -9,6 +9,8 @@ urlpatterns = [
 
     path('orders/', workOrder.as_view()),
     path('inbox_orders/' , inbox_order , name="inboxOrders"),
+    path('updateAccept/<int:pk>/' , update_accept , name ="updateAccept" ),
+    path('acceptRequirement/<int:pk>/' , accept_requirement , name ="acceptRequirement" ),
     path('clients/', client.as_view()),
     path('requirements/', requirements_view.as_view()),
     path('deleteitem/<int:pk>/', delete_item, name="deleteOrder"),
