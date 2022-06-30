@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,17 +22,12 @@ def inbox_order(request):
     if request.method == 'GET':
         if department == 'D':
             query1 = orders.objects.exclude(target_dapertment=["P"])
-            query2 = query1.exclude(state='F')
-            serializer1 = orders_serializers(query2, many=True)
+            serializer1 = orders_serializers(query1, many=True)
             return Response(serializer1.data)
         if department == "P" :
-            query3 = orders.objects.exclude(target_dapertment=["D"])
-            query4 = query3.exclude(state='F')
-            serializer2 = orders_serializers(query4, many=True)
+            query2 = orders.objects.exclude(target_dapertment=["D"])
+            serializer2 = orders_serializers(query2, many=True)
             return Response(serializer2.data)
-        if department == "M" :
-            return Response({"Response":"You don't have any orders"} )
-
 
 
 class workOrder(APIView):
@@ -41,7 +35,7 @@ class workOrder(APIView):
     def __init__(self):
         pass
     def get(self, request):
-        orderList = orders.objects.all().order_by('-date','-order_id')
+        orderList = orders.objects.all()
         serializer = orders_serializers(orderList, many=True)
         return Response(serializer.data)
     def post(self , request):
@@ -74,7 +68,7 @@ class workOrder(APIView):
             serializer.save()
             return Response(serializer.data,status=201)
         else:
-            return Response({"Response" : "invalid data"}, status=404)
+            return Response({"Response" : "invalid data"}, status=401)
 
 class client(APIView):
     # permission_classes = []
@@ -151,30 +145,24 @@ def delete_requirment_item(request, pk):
 @api_view(['POST', ])
 # @permission_classes([])
 def registration(request):
-    user_instance = Users.objects.get(user=request.user)
-    if user_instance.department == 'M':
-        username = request.data["username"]
-        department = request.data["department"]
-        password1 = request.data["password1"]
-        password2 = request.data["password2"]
-        serializer = users_serializers(data=request.data)
-        if User.objects.filter(username=username).exists():
-            return Response({"Response":"username already exist !"}, status=401)
-        else:
-            if serializer.is_valid() and password1 == password2:
-                user = User.objects.create_user(username=username, password=password1)
-                user.save()
-                nuser = Users.objects.create(user=user, name=username, department=department )
-                token = Token.objects.get(user=user).key
-                nuser.save()
-                data = request.data
-                data.update({'token':token})
-                data.update({'Response':'Successful created'})
-                return Response(data, status=201)
-            else:
-                return Response({"Response":'password must match.'}, status=401)
+    username = request.data["username"]
+    department = request.data["department"]
+    password1 = request.data["password1"]
+    password2 = request.data["password2"]
+    serializer = users_serializers(data=request.data)
+
+
+    if serializer.is_valid() and password1 == password2:
+        user = User.objects.create_user(username=username, password=password1)
+        user.save()
+        nuser = Users.objects.create(user=user, name=username, department=department )
+        token = Token.objects.get(user=user).key
+        nuser.save()
+        data = request.data
+        data.update({'token':token})
+        return Response(data, status=201)
     else:
-        return Response({'Response': "You don't have permission."}, status=404)
+        return Response('password must match.', status=401)
 
 
 @api_view(['POST', ])
@@ -262,54 +250,16 @@ def update_item(request,pk):
         json_response = json.load(request)
         # print(json_response)
         obj_list = ["client_name","accepted_by","img_path","recived_date","delivery_date","design_types","design_path","design_category","printing_type","size_width","size_high","materials","color",
-                    "thickness","Post_print_services","state"]
+                    "thickness","Post_print_services","state" , "target_dapertment"]
         for object in obj_list:
             # print(object)
             if object in json_response:
                 #doctor_requested_id = json_response[object]
                 verified_object = orders.objects.filter(order_id=pk)
                 verified_object.update(**json_response)
-        return Response({'Response': "successfully Accepted "},status=200)
+        return Response({'Response': "successfully updated."},status=200)
     else:
         return Response({'Response': "You don't have permission to update this."}, status=404)
-
-
-@api_view(['PUT',])
-@permission_classes((IsAuthenticated,))
-def update_accept(request,pk):
-    user_instance = Users.objects.get(user=request.user)
-    json_response = json.load(request)
-    # print(json_response)
-
-    if "accepted_by" in json_response :
-        verified_object = orders.objects.filter(order_id=pk)
-        #if json_response["accepted_by"] != "Not Accepted yet":
-        if verified_object.values('accepted_by')[0]["accepted_by"] != "Not Accepted yet":
-            return Response({'Response': "Already accepted by another user!."},status=404)
-        else:
-            verified_object.update(**json_response)
-            return Response({'Response': "successfully updated." },status=200)
-    else :
-        return Response({'Response': "something went wrong!."},status=404)
-
-@api_view(['PUT',])
-@permission_classes((IsAuthenticated,))
-def accept_requirement(request,pk):
-    json_response = json.load(request)
-    # print(json_response)
-
-    if "acceptable_by" in json_response :
-        verified_object = requirements.objects.filter(id=pk)
-        #if json_response["accepted_by"] != "Not Accepted yet":
-        if verified_object.values('acceptable_by')[0]["acceptable_by"] != "not accepted":
-            return Response({'Response': "Already accepted by another user!."},status=404)
-        else:
-            verified_object.update(**json_response)
-            return Response({'Response': "successfully updated." },status=200)
-    else :
-        return Response({'Response': "something went wrong!."},status=404)
-
-
 
 
 @api_view(['DELETE',])
